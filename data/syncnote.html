@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>SyncNote</title>
+    <link rel="stylesheet" type="text/css" href="styles/alertify.css">
+    <link rel="stylesheet" type="text/css" href="styles/style.css">
+    <link rel="stylesheet" type="text/css" href="styles/loader.css">
+    <script src="scripts/jquery-2.1.1.min.js"></script>
+    <script src="scripts/script.js"></script>
+    <script src = "scripts/alertify.js"></script>
+</head>
+<body>
+    <div id="controls_wrapper">
+        <div id="controls">
+            <button id="add" class="button"></button><br>
+            <button id="login" class="button"></button><br>
+            <button id="options" class="button"></button>
+        </div>
+    </div>
+    <div id="note_preview_wrapper">
+        <div id="statusbar"></div>
+        <div id="note-container">
+            <div class="note">
+                <div class="note-controls-wrapper">
+                    <div id="calendar-btn" class="note-controls"></div>
+                    <div id="remove-note-btn" class="note-controls"></div>
+                </div>
+                <p class="note-content"></p>
+            </div>
+            <div class="note">
+                <div class="note-controls-wrapper">
+                    <div id="calendar-btn" class="note-controls"></div>
+                    <div id="remove-note-btn" class="note-controls"></div>
+                </div>
+                <p class="note-content">fasafasfasf</p>
+            </div>            
+        </div>
+    </div>
+    <div id="editor_wrapper">
+        <div id="toolbar">
+            <button id="bold" class="tb-button"></button>
+            <button id="italic" class="tb-button"></button>
+            <button id="underline" class="tb-button"></button>
+            <button id="strikethrough" class="tb-button"></button>
+            <button id="subscript" class="tb-button"></button>
+            <button id="superscript" class="tb-button"></button>
+            <button id="outdent" class="tb-button"></button>   
+            <button id="indent" class="tb-button"></button>         
+            <button id="removeformat" class="tb-button"></button>
+            <button id="align_left" class="tb-button"></button>
+            <button id="align_center" class="tb-button"></button>
+            <button id="align_right" class="tb-button"></button>
+            <button id="align_justify" class="tb-button"></button>
+            <button id="undo" class="tb-button"></button>
+            <button id="redo" class="tb-button"></button>
+        </div>
+        <p id="editor" contenteditable="true"></p>
+    </div>    
+</body>
+</html>

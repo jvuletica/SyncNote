@@ -1,0 +1,193 @@
+@font-face {
+    font-family: "Reenie Beanie";
+    src: url("ReenieBeanie.ttf") format("truetype");
+}
+@font-face {
+    font-family: "Open Sans";
+    src: url("OpenSans-Regular.ttf") format("truetype");
+}
+* {
+    margin:0;
+    padding:0;
+}
+body {
+    font-size: 0;
+    background-color: #455A64;
+}
+#controls_wrapper {
+    float:left;
+    width: 7vw;
+    height: 100vh;
+}
+#controls {
+    margin: 30vh 0;
+}
+#note_preview_wrapper {
+    display: inline-block;
+    width: 33vw;
+    height: 100vh;
+}
+#statusbar {
+    width: 33vw;
+    height: 6vh;
+}
+#note-container {
+    height: 91.3vh;
+    overflow: auto;
+}
+.note {
+    margin: 2px 0px 14px 0px;
+    width: 30vw;
+    height: 15vh;
+    background-color: white;
+    border-bottom: 6px solid #455A64;
+    -webkit-transition: all .4s ease;
+    overflow: hidden;
+    -webkit-user-select:none;
+}
+.note-content {
+    font-size: 12pt;
+    padding: 4px;
+    word-wrap: break-word;
+    overflow: hidden;
+}
+.note:hover, .active {
+    border-color: #90A4AE;
+}
+.note:hover .note-controls-wrapper, .active .note-controls-wrapper {
+    opacity: 1;
+}
+.note-controls-wrapper {
+    float: right;
+    -webkit-transition: all .4s ease;
+    opacity: 0;
+}
+.note-controls {
+    height: 24px;
+    width: 24px;   
+    background-size: 24px 24px;
+    cursor: pointer;
+}
+#calendar-btn {
+    display: inline-block;
+    background-image:url(../img/calendar.png);
+}
+#remove-note-btn {
+    display: inline-block;
+    background-image:url(../img/remove_note3.png);
+}
+#editor_wrapper {
+    float:right;
+    width: 60vw;
+    height: 100vh;
+}
+#editor {
+    font-size: 12pt;
+    outline: none;
+    width: 56vw;
+    height: 89vh;
+    padding: 1vh 1vw;
+    background-color: white;
+    margin: 2px;
+    overflow: auto;
+}
+#toolbar {
+    width: 60vw;
+    height: 6vh;
+}
+.button {
+    border: none;
+    outline: none;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    width: 44px;
+    height: 44px;
+    margin: 10px;
+    border-radius: 8px;
+    background-color: #455A64;
+    transition: background 0.25s linear;
+}
+button:hover {
+    background-color: #263238;
+}
+#add {
+    background-image:url(../img/add.png);
+}
+#login {
+    background-image:url(../img/login.png);
+}
+#options {
+    background-image:url(../img/options.png);
+}
+.tb-button {
+    border: none;
+    outline: none;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    width: 30px;
+    height: 30px;
+    margin: 2px;
+    border-radius: 6px;
+    background-color: #455A64;
+    transition: background 0.25s linear;
+}
+#bold {
+    background-image:url(../img/bold.png);
+}
+#italic {
+    background-image:url(../img/italic.png);
+}
+#underline {
+    background-image:url(../img/underline.png);
+}
+#strikethrough {
+    background-image:url(../img/strikethrough.png);
+}
+#outdent {
+    background-image:url(../img/outdent.png);
+    background-size: 74%;
+    background-position: center;
+}
+#indent {
+    background-image:url(../img/indent.png);
+    background-size: 74%;
+    background-position: center;
+}
+#subscript {
+    background-image:url(../img/subscript.png);
+}
+#superscript {
+    background-image:url(../img/superscript.png);
+}
+#removeformat {
+    background-image:url(../img/removeformat.png);
+}
+#align_left {
+    background-image:url(../img/align_left.png);
+}
+#align_center {
+    background-image:url(../img/align_center.png);
+}
+#align_right {
+    background-image:url(../img/align_right.png);
+}
+#align_justify {
+    background-image:url(../img/align_justify.png);
+}
+#undo {
+    background-image:url(../img/undo.png);
+}
+#redo {
+    background-image:url(../img/redo.png);
+}
+
+/*::-webkit-scrollbar {
+    width: 8px;
+    background-color:#455A64;
+}
+
+hover::-webkit-scrollbar-thumb {
+    background-color:#37474F;
+    border-radius: 4px;
+}*/
+
