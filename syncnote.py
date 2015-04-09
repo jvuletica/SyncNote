@@ -101,7 +101,7 @@ class Ui_Form(QtWidgets.QWidget):
         self.webView = QtWebKitWidgets.QWebView(Form)
         path = os.path.dirname(os.path.realpath("__file__"))
         #self.webView.setUrl(QtCore.QUrl.fromLocalFile(path + "/data/syncnote.html"))
-        self.webView.setHtml(self.getNotes(), QtCore.QUrl.fromLocalFile(path + "/data/"))
+        self.webView.setHtml(self.getHTML(), QtCore.QUrl.fromLocalFile(path + "/data/"))
         self.webView.setObjectName("webView")
         self.verticalLayout.addWidget(self.webView)
 
@@ -114,64 +114,33 @@ class Ui_Form(QtWidgets.QWidget):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
 
-    data_storage = []
-    @QtCore.pyqtSlot(str, str)
-    def addData(self, title, content):
-        dict_data = {"title": title, "content": content}
-        self.data_storage.append(dict_data.copy())
-
-    @QtCore.pyqtSlot()
-    def saveData(self):
-        file = open("data/notes.txt", "w")
-        for element in self.data_storage:
-            if (file.tell()):
-                file.write("\n")
-            file.write(element["title"] + " = {")
-            file.write(element["content"] + "}")
+    @QtCore.pyqtSlot(str)
+    def saveNotes(self, notes):
+        file = open("data/notes.html", "w")
+        file.write(notes)
         file.close()
-
-    @QtCore.pyqtSlot()
-    def clearData(self):
-        self.data_storage.clear()
-
-    def appendHtml(self, title, content):
-        html_element = '<div contenteditable="true" class="wrapper-dropdown">' \
-        + title + '<img src="img/menu.png" class = "imgclick"/>' \
-        + '<p contenteditable="true">' + content \
-        + '</p></div>'
-        print(html_element)
-
-    def notesToHtml(self):
-        try:
-            file = open("data/notes.txt", "r")
-            notes = file.read()
-            file.close()
-        except:
-            return False
-        #print(notes)
-        while(len(notes)):
-            title_start = 0
-            title_end = notes.find("=") - 1
-            content_start = notes.find("{") + 1
-            content_end = notes.find("}")
-            title = notes[title_start:title_end].strip("\n")
-            content = notes[content_start:content_end]
-            notes = notes[content_end + 1:]
-            self.appendHtml(title, content)
 
     def getNotes(self):
-        file = open("data/syncnote.html", "r")
-        html = file.read()
-        html_backup = html
-        file.close()
-        start_index = html.find('<div class = "wrapper">') \
-        + len('<div class = "wrapper">')
-        notes_html = self.notesToHtml()
-        if(notes_html):
-            print(notes_html)
+        try:
+            file = open("data/notes.html","r")
+            notes = file.read()
+            file.close()
+            return notes
+        except:
+            return False
 
+    def getHTML(self):
+        file = open("data/syncnote.html", "r")
+        html_backup = file.read()
+        file.close()
+        notes = self.getNotes()
+        if(notes):
+            container = '<div id="note-container">'
+            index = html_backup.find(container) + len(container)
+            html = html_backup[:index] + notes + html_backup[index:]
+            return html
         else:
-            return(html_backup)
+            return html_backup
 
 class Js_To_Qt(QtCore.QObject):
     @QtCore.pyqtSlot(str)

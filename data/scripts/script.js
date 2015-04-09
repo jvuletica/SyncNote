@@ -1,5 +1,4 @@
 $(function() {
-
     function editorCommand(command) {
         document.execCommand(command, false, null);
     }
@@ -10,8 +9,16 @@ $(function() {
         + '<div id="calendar-btn" class="note-controls"></div>'
         + '<div id="remove-note-btn" class="note-controls"></div>'
         + '</div>'
-        + '<p class="note-content"></p>'
+        + '<div class="note-content"></div>'
         + '</div>').fadeIn(200));
+    }
+    function activateNote(selected_note) {
+        $(".note").each(function() {
+            $(this).removeClass("active");
+        });
+        selected_note.addClass("active");
+        var note_content = selected_note.find(".note-content").html();
+        $("#editor").html(note_content);
     }
     $("#bold").on("click", function() {
         editorCommand("bold");
@@ -59,6 +66,8 @@ $(function() {
         editorCommand("redo");
     });
 
+    $(".active").removeClass("active");
+
     $("button").on("click",function() {
         $(this).fadeOut(160, function() {
             $(this).fadeIn(160);
@@ -67,72 +76,52 @@ $(function() {
 
     $("#add").on("click", function() {
         addNote();
+        activateNote($(".note").first());
     });
+
+    alertify.defaults.transition = "fade";
+    alertify.defaults.closable = false;
+    alertify.defaults.movable = false;
 
     $("#note-container").on("click", "#remove-note-btn", function() {
         $(this).parent().parent().attr("id", "remove");
-        alertify.confirm("Message", function (e) {
-    if (e) {
-        alert("radi");
-    } else {
-        // user clicked "cancel"
-    }
-});
-        //confirmBox();
+        alertify.dialog('confirm').set({
+            "labels":{ok:"Confirm", cancel:"Cancel"},
+            "title": "Warning!",
+            "message": "Do you want to delete this note?",
+            "onok": function(){
+                $("#remove").remove();
+                $("#editor").empty();
+            },
+            "oncancel": function(){$("#remove").removeAttr("id");}
+        }).show();
     });
 
     $("#note-container").on("click", ".note", function() {
-        $(".note").each(function() {
-            $(this).removeClass("active");
-        });
-        $(this).addClass("active");
-        var note_content = $(this).find("p").html();
-        $("#editor").html(note_content);
+        activateNote($(this));
     });
 
     $("#editor").on("input", function() {
-        $(".active p").html($(this).html());
+        $(".active .note-content").html($(this).html());
     });
 
-    /*function hideInactive() {
-        $(".wrapper-dropdown").each(function() {
-            if(!$(this).hasClass("active"))
-                $(this).hide(200)
-        });
-    }*/
+    var timeout;
+    $("#note-container").bind("DOMSubtreeModified",function(){
+        clearTimeout(timeout);
+        timeout = setTimeout(function() {
+            $(".loader").show();
+            var notes = $("#note-container").html();
+            pyqtConnect.saveNotes(notes); 
+            setTimeout("$('.loader').hide();", 1200);
+        }, 2500);
+    });
+
 
     /*if (($(".wrapper-dropdown").length) == 0) {
         for ( var i = 0; i < 4; i++ ) {
             addNote();
         }
-    }
-
-    $(".wrapper").on("click", ".imgclick", function() {
-        if(!$(this).parent().hasClass("active")) {
-            $(this).parent().toggleClass("active");
-            hideInactive();
-        }
-        else {
-            $(this).parent().toggleClass("active");
-            showAll();
-        }        
-    });
-
-    var timeout;
-    $(".wrapper").bind("DOMSubtreeModified",function(){
-        clearTimeout(timeout);
-        timeout = setTimeout(function() {
-            $(".loader").show();
-            $(".wrapper-dropdown").each(function() {
-                title = $(this).clone().children().remove().end().text(),
-                content = $(this).find("p").text()
-                pyqtConnect.addData(title, content);
-            })
-            pyqtConnect.saveData();
-            pyqtConnect.clearData();
-            setTimeout("$('.loader').hide();", 2800);
-        }, 2000);
-    });*/
+    }*/
     /*$(".wrapper").bind('DOMNodeInserted DOMNodeRemoved',function(){
         clearTimeout(timeout);
         timeout = setTimeout(function() {
