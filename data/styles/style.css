@@ -13,6 +13,7 @@
 body {
     font-size: 0;
     background-color: #455A64;
+    overflow: hidden;
 }
 ::-webkit-scrollbar {
     width: 8px;
@@ -87,24 +88,23 @@ body {
     display: inline-block;
     background-image:url(../img/remove_note3.png);
 }
-#editor_wrapper, #login_wrapper {
+#editor_wrapper{
     float:right;
     width: 60vw;
     height: 100vh;
 }
-#editor_wrapper.inactive, #login_wrapper.inactive {
-    display: none;
-}
-#editor {
+
+#editor_box {
     font-size: 12pt;
     outline: none;
     width: 56vw;
-    height: 89vh;
+    height: 88.8vh;
     padding: 1vh 1vw;
     background-color: white;
     margin: 2px;
     overflow: auto;
 }
+
 #toolbar {
     width: 60vw;
     height: 6vh;
@@ -193,6 +193,52 @@ button:hover {
 }
 #redo {
     background-image:url(../img/redo.png);
+}
+#login_wrapper, #options_wrapper {
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    color: white;
+    font-size: 12pt;
+}
+#login_wrapper img {
+    display: block;
+    width: 70px;
+    height: 70px;
+    margin: 0 auto;
+}
+#login_btn {
+    width: 60px;
+    height: 60px;
+    display: block;
+    margin: 10px auto;
+    background-image:url(../img/google.png);
+}
+
+form {
+    width: 24vw;
+    height: 30vh;
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    margin:-18vh 0 0 -11vw;
+    color: white;
+}
+input {
+    width: 96%;
+    height: 1.2em;
+    margin: 10px 0;
+    padding: 6px;
+    outline: none;
+    color: white;
+    border: none;
+    background-color: #455A64;
+    transition: background 0.3s linear;
+}
+input:focus {
+    background-color: white;
+    color: #455A64;
+    border: none;
 }
 
 /*::-webkit-scrollbar {

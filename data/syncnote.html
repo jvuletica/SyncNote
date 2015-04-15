@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="styles/loader.css">
     <script src="scripts/jquery-2.1.1.min.js"></script>
     <script src="scripts/script.js"></script>
-    <script src = "scripts/alertify.js"></script>
+    <script src="scripts/alertify.js"></script>
 </head>
 <body>
     <div id="controls_wrapper">
@@ -42,10 +42,21 @@
             <button id="undo" class="tb-button"></button>
             <button id="redo" class="tb-button"></button>
         </div>
-        <p id="editor" contenteditable="true"></p>
+        <p id="editor_box" contenteditable="true"></p>
     </div>
-    <div id="login_wrapper" class="inactive">
-        <h2>Naslov</h2>>
+    <div id="login_wrapper">
+        <form>
+            <button id="login_btn" class="button"></button>
+            User name:
+            <br>
+            <input type="text" name="username" value="user@gmail.com">
+            <br>
+            Password:
+            <br>
+            <input type="password" name="psw" value="password">
+            <br>
+        </form>
     </div>
+    <div id="options_wrapper">opcije</div>
 </body>
 </html>

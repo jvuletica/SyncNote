@@ -2,6 +2,7 @@ $(function() {
     function editorCommand(command) {
         document.execCommand(command, false, null);
     }
+    //prepends note html into note container
     function addNote() {
         $("#note-container").prepend($(''
         + '<div class="note">'
@@ -12,14 +13,18 @@ $(function() {
         + '<div class="note-content"></div>'
         + '</div>').fadeIn(200));
     }
+    //activates note and transfers content into editor
     function activateNote(selected_note) {
         $(".note").each(function() {
             $(this).removeClass("active");
         });
         selected_note.addClass("active");
         var note_content = selected_note.find(".note-content").html();
-        $("#editor").html(note_content);
+        $("#editor_box").html(note_content);
     }
+    activateNote($(".note").first());
+
+    //WYSIWYG editor buttons below
     $("#bold").on("click", function() {
         editorCommand("bold");
     });
@@ -66,23 +71,41 @@ $(function() {
         editorCommand("redo");
     });
 
-    $(".active").removeClass("active");
-
+    //click effect on buttons
     $("button").on("click",function() {
         $(this).fadeOut(160, function() {
             $(this).fadeIn(160);
         });
     })
 
+    //adds new empty note and activates it, displays appropriate wrapper
     $("#add").on("click", function() {
-        addNote();
-        activateNote($(".note").first());
+        var display_state = $("#note_preview_wrapper").css("display");
+        if(display_state == "none") {
+            $("body > :not(#controls_wrapper)").fadeOut();
+            $("#note_preview_wrapper").fadeIn();
+            $("#editor_wrapper").fadeIn();            
+        }
+        else {
+            addNote();
+            activateNote($(".note").first());
+        }      
+    });
+    $("#login").on("click", function() {
+        $("body > :not(#controls_wrapper)").fadeOut();
+        $("#login_wrapper").fadeIn();
+    });
+    $("#options").on("click", function() {
+        $("body > :not(#controls_wrapper)").fadeOut();
+        $("#options_wrapper").fadeIn();
     });
 
+    //sets custom confirm dialog defaults
     alertify.defaults.transition = "fade";
     alertify.defaults.closable = false;
     alertify.defaults.movable = false;
 
+    //shows confirm dialog and removes note if confirmed
     $("#note-container").on("click", "#remove-note-btn", function() {
         $(this).parent().parent().attr("id", "remove");
         alertify.dialog('confirm').set({
@@ -91,32 +114,34 @@ $(function() {
             "message": "Do you want to delete this note?",
             "onok": function(){
                 $("#remove").remove();
-                $("#editor").empty();
+                $("#editor_box").empty();
             },
             "oncancel": function(){$("#remove").removeAttr("id");}
         }).show();
     });
 
+    //monitors click on note previews and transfers content to editor
     $("#note-container").on("click", ".note", function() {
         activateNote($(this));
     });
 
-    $("#editor").on("input", function() {
+    //transfer contents of editor into active note on input
+    $("#editor_box").on("input", function() {
         $(".active .note-content").html($(this).html());
     });
 
+    //autosave on note container change
     var timeout;
     $("#note-container").bind("DOMSubtreeModified",function(){
         clearTimeout(timeout);
         timeout = setTimeout(function() {
             $(".loader").show();
-            var notes = $("#note-container").html();
-            pyqtConnect.saveNotes(notes); 
+            //remove active class and save html
+            var $notes = $("#note-container").html().replace(" active","");
+            pyqtConnect.saveNotes($notes); 
             setTimeout("$('.loader').hide();", 1200);
         }, 2500);
     });
-
-
     /*if (($(".wrapper-dropdown").length) == 0) {
         for ( var i = 0; i < 4; i++ ) {
             addNote();
