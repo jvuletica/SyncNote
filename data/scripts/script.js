@@ -1,7 +1,15 @@
 $(function() {
+
+    //sets defaults for custom confirm dialog
+    alertify.defaults.transition = "fade";
+    alertify.defaults.closable = false;
+    alertify.defaults.movable = false;
+
+    //wraps execCommand and accepts commands from editor buttons
     function editorCommand(command) {
         document.execCommand(command, false, null);
     }
+
     //prepends note html into note container
     function addNote() {
         $("#note-container").prepend($(''
@@ -13,6 +21,7 @@ $(function() {
         + '<div class="note-content"></div>'
         + '</div>').fadeIn(200));
     }
+
     //activates note and transfers content into editor
     function activateNote(selected_note) {
         $(".note").each(function() {
@@ -22,7 +31,14 @@ $(function() {
         var note_content = selected_note.find(".note-content").html();
         $("#editor_box").html(note_content);
     }
-    activateNote($(".note").first());
+
+    //checks if activated note exists, if not, creates a new one
+    function ifNotActiveCreate() {
+        if(!$(".note").hasClass("active")) {
+            addNote();
+            activateNote($(".note").first());
+        }
+    }
 
     //WYSIWYG editor buttons below
     $("#bold").on("click", function() {
@@ -100,13 +116,11 @@ $(function() {
         $("#options_wrapper").fadeIn();
     });
 
-    //sets custom confirm dialog defaults
-    alertify.defaults.transition = "fade";
-    alertify.defaults.closable = false;
-    alertify.defaults.movable = false;
+    // caching the note-container selector
+    var container = $("#note-container");
 
     //shows confirm dialog and removes note if confirmed
-    $("#note-container").on("click", "#remove-note-btn", function() {
+    container.on("click", "#remove-note-btn", function() {
         $(this).parent().parent().attr("id", "remove");
         alertify.dialog('confirm').set({
             "labels":{ok:"Confirm", cancel:"Cancel"},
@@ -121,23 +135,24 @@ $(function() {
     });
 
     //monitors click on note previews and transfers content to editor
-    $("#note-container").on("click", ".note", function() {
+    container.on("click", ".note", function() {
         activateNote($(this));
     });
 
     //transfer contents of editor into active note on input
     $("#editor_box").on("input", function() {
+        ifNotActiveCreate();
         $(".active .note-content").html($(this).html());
     });
 
     //autosave on note container change
     var timeout;
-    $("#note-container").bind("DOMSubtreeModified",function(){
+    container.bind("DOMSubtreeModified",function(){
         clearTimeout(timeout);
         timeout = setTimeout(function() {
             $(".loader").show();
             //remove active class and save html
-            var $notes = $("#note-container").html().replace(" active","");
+            var $notes = container.html().replace(" active","");
             pyqtConnect.saveNotes($notes); 
             setTimeout("$('.loader').hide();", 1200);
         }, 2500);
