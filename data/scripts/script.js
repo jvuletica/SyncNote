@@ -74,28 +74,30 @@ $(function() {
         var date = $("#month").text().split(" ");//month, year
         var month_num = months.indexOf(date[0]);
         var year = parseInt(date[1]);
+
         if(direction == "next"){
-            /*if(month_num == 11) {
-                month_num = 0;
-            }*/
-            //var day_stats = daysInMonth(month_num + 1, year);
-            $("#month").text(months[month_num + 1] + " " + year);
+            month_num == 11 ? (month_num = 0, year++) : month_num++;
         }
         else if(direction == "previous"){
-            /*if(month_num == 0) {
-                month_num = 11;
-            }*/
-            $("#month").text(months[month_num - 1] + " " + year);
-            //var day_stats = daysInMonth(month_num - 1, year);
+            month_num == 0 ? (month_num = 11, year--) : month_num--;            
         }
-        /*var i = day_stats[1];
-        var end = day_stats[0] + i - 1;
-        var j = 1;
-        alert(day_stats[0]);
-        for (i; i <= end; i++) {
-            $(cells[i]).text(j);
-            j++;
-        }*/
+
+        $("#calendar").fadeToggle(160, function() {
+            $(this).fadeToggle(160);
+            $("#month").text(months[month_num] + " " + year);
+            var cells = $("td:not(.days)");
+            cells.each(function() {
+                $(this).text("");
+            });
+            var day_stats = daysInMonth(month_num, year);
+            var i = day_stats[1];
+            var end = day_stats[0] + i - 1;
+            var j = 1;
+            for (i; i <= end; i++) {
+                $(cells[i]).text(j);
+                j++;
+            }
+        });
     }
 
     //WYSIWYG editor buttons below

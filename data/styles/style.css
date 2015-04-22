@@ -283,6 +283,7 @@ td {
     cursor: default;
 }
 header {
+    height: 1em;
     position: relative;
     width: 44vw;
     text-align: center;
