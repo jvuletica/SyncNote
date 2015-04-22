@@ -112,7 +112,7 @@ class Ui_Form(QtWidgets.QWidget):
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "Form"))
+        Form.setWindowTitle(_translate("Form", "SyncNote"))
 
     @QtCore.pyqtSlot(str)
     def saveNotes(self, notes):
@@ -152,7 +152,6 @@ if __name__ == '__main__':
     syncnote = Ui_Form()
     syncnote.move(QtWidgets.QApplication.desktop().screen().rect().center()
     - syncnote.rect().center())
-    syncnote.setWindowTitle("SyncNote")
     syncnote.show()
     #JQt_instance = Js_To_Qt()
     syncnote.webView.page().mainFrame().addToJavaScriptWindowObject("pyqtConnect",syncnote)

@@ -1,10 +1,6 @@
 @font-face {
-    font-family: "Reenie Beanie";
-    src: url("ReenieBeanie.ttf") format("truetype");
-}
-@font-face {
     font-family: "Open Sans";
-    src: url("OpenSans-Regular.ttf") format("truetype");
+    src: url("OpenSans-Regular.ttf");
 }
 * {
     margin:0;
@@ -121,8 +117,11 @@ body {
     background-color: #455A64;
     transition: background 0.25s linear;
 }
-button:hover {
+button:hover, td:not(.days):hover, td.selected{
     background-color: #263238;
+}
+td:empty:hover {
+    background-color: #455A64;
 }
 #add {
     background-image:url(../img/add.png);
@@ -240,7 +239,55 @@ input:focus {
     color: #455A64;
     border: none;
 }
-
+#calendar {
+    display: none;
+    color: white;
+    font-size: 16pt;
+    outline: none;
+    width: 56vw;
+    height: 88.8vh;
+    padding: 0 8vw;
+    margin: 2px;
+}
+#calendar button {
+    position: absolute;
+    top: 1%;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    width: 34px;
+    height: 34px;
+    background-size: 100%;
+}
+#calendar button:hover {
+    background-color: #263238;
+    border-radius: 10px;
+}
+#cal-left {
+    background-image:url(../img/left.png);
+    right: 90%;
+}
+#cal-right {
+    background-image:url(../img/right.png);
+    left: 90%;
+}
+table {
+    width: 44vw;
+    height: 60vh;
+    table-layout: fixed;
+}
+td {
+    text-align: center;
+    border-radius: 16px;
+    transition: background 0.25s linear;
+    cursor: default;
+}
+header {
+    position: relative;
+    width: 44vw;
+    text-align: center;
+    cursor: default;
+}
 /*::-webkit-scrollbar {
     width: 8px;
     background-color:#455A64;

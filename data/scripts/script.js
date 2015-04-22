@@ -5,6 +5,12 @@ $(function() {
     alertify.defaults.closable = false;
     alertify.defaults.movable = false;
 
+    var weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday",
+    "Thursday", "Friday", "Saturday"];
+    var months = ["January", "February", "March", "April",
+    "May", "June", "July", "August", "September", "October",
+    "November", "December"];
+
     //wraps execCommand and accepts commands from editor buttons
     function editorCommand(command) {
         document.execCommand(command, false, null);
@@ -38,6 +44,58 @@ $(function() {
             addNote();
             activateNote($(".note").first());
         }
+    }
+
+    //returns number of days in a certain month and the name of first day
+    function daysInMonth(month,year) {
+        var first_day = new Date(year, month, 1).getDay();
+        var days_count = new Date(year, month + 1, 0).getDate();
+        var day_name = weekdays[first_day];
+        return [days_count, first_day];
+    }
+
+    function createCalendar() {
+        var date = new Date();
+        var month_num = date.getMonth();
+        var year = date.getFullYear();
+        $("#month").text(months[month_num] + " " + year);
+        var cells = $("td:not(.days)");
+        var day_stats = daysInMonth(month_num, year);
+        var i = day_stats[1];
+        var end = day_stats[0] + i - 1;
+        var j = 1;
+        for (i; i <= end; i++) {
+            $(cells[i]).text(j);
+            j++;
+        }
+    }
+
+    function fillCalendar(direction) {
+        var date = $("#month").text().split(" ");//month, year
+        var month_num = months.indexOf(date[0]);
+        var year = parseInt(date[1]);
+        if(direction == "next"){
+            /*if(month_num == 11) {
+                month_num = 0;
+            }*/
+            //var day_stats = daysInMonth(month_num + 1, year);
+            $("#month").text(months[month_num + 1] + " " + year);
+        }
+        else if(direction == "previous"){
+            /*if(month_num == 0) {
+                month_num = 11;
+            }*/
+            $("#month").text(months[month_num - 1] + " " + year);
+            //var day_stats = daysInMonth(month_num - 1, year);
+        }
+        /*var i = day_stats[1];
+        var end = day_stats[0] + i - 1;
+        var j = 1;
+        alert(day_stats[0]);
+        for (i; i <= end; i++) {
+            $(cells[i]).text(j);
+            j++;
+        }*/
     }
 
     //WYSIWYG editor buttons below
@@ -92,7 +150,7 @@ $(function() {
         $(this).fadeOut(160, function() {
             $(this).fadeIn(160);
         });
-    })
+    });
 
     //adds new empty note and activates it, displays appropriate wrapper
     $("#add").on("click", function() {
@@ -134,9 +192,31 @@ $(function() {
         }).show();
     });
 
+    container.on("click", "#calendar-btn", function() {
+        createCalendar();
+        $("#editor_box").fadeOut();
+        $(".tb-button").fadeOut();
+        $("#calendar").fadeIn();
+        activateNote($(this).parent().parent());
+        return false;//prevent propagation
+    });
+
+    $("#cal-left").on("click", function() {
+        fillCalendar("previous");
+    });
+    $("#cal-right").on("click", function() {
+        fillCalendar("next");
+    });
+
     //monitors click on note previews and transfers content to editor
     container.on("click", ".note", function() {
         activateNote($(this));
+        //alert($("#calendar").css("display"))
+        if($("#calendar").css("display")=="block") {
+            $("#calendar").fadeOut();
+            $("#editor_box").fadeIn();
+            $(".tb-button").fadeIn();
+        }
     });
 
     //transfer contents of editor into active note on input
@@ -157,6 +237,7 @@ $(function() {
             setTimeout("$('.loader').hide();", 1200);
         }, 2500);
     });
+
     /*if (($(".wrapper-dropdown").length) == 0) {
         for ( var i = 0; i < 4; i++ ) {
             addNote();
