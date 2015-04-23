@@ -45,12 +45,13 @@ body {
 }
 .note {
     margin: 2px 0px 14px 0px;
-    width: 30vw;
+    width: 30.6vw;
     height: 15vh;
     background-color: white;
     border-bottom: 6px solid #455A64;
     -webkit-transition: all .4s ease;
     overflow: hidden;
+    cursor: default;
     -webkit-user-select:none;
 }
 .note-content {
@@ -288,6 +289,10 @@ header {
     width: 44vw;
     text-align: center;
     cursor: default;
+}
+.present_day {
+    border: 2px solid;
+    border-color: #90A4AE;
 }
 /*::-webkit-scrollbar {
     width: 8px;

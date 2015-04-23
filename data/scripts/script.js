@@ -10,7 +10,6 @@ $(function() {
     var months = ["January", "February", "March", "April",
     "May", "June", "July", "August", "September", "October",
     "November", "December"];
-
     //wraps execCommand and accepts commands from editor buttons
     function editorCommand(command) {
         document.execCommand(command, false, null);
@@ -30,9 +29,7 @@ $(function() {
 
     //activates note and transfers content into editor
     function activateNote(selected_note) {
-        $(".note").each(function() {
-            $(this).removeClass("active");
-        });
+        $(".active").removeClass("active");
         selected_note.addClass("active");
         var note_content = selected_note.find(".note-content").html();
         $("#editor_box").html(note_content);
@@ -56,6 +53,7 @@ $(function() {
 
     function createCalendar() {
         var date = new Date();
+        var day = date.getDate();
         var month_num = date.getMonth();
         var year = date.getFullYear();
         $("#month").text(months[month_num] + " " + year);
@@ -68,22 +66,26 @@ $(function() {
             $(cells[i]).text(j);
             j++;
         }
+        $("td:contains('"+day+"')").addClass("present_day")
     }
 
     function fillCalendar(direction) {
         var date = $("#month").text().split(" ");//month, year
         var month_num = months.indexOf(date[0]);
         var year = parseInt(date[1]);
-
+        var present_date = new Date();
+        var present_day = present_date.getDate();
+        //increments/decrements months and checks for start/end of year
         if(direction == "next"){
             month_num == 11 ? (month_num = 0, year++) : month_num++;
         }
         else if(direction == "previous"){
             month_num == 0 ? (month_num = 11, year--) : month_num--;            
         }
-
+        //fades out, fills calendar table, month and year, fades in
         $("#calendar").fadeToggle(160, function() {
             $(this).fadeToggle(160);
+            $(".present_day").removeClass("present_day");
             $("#month").text(months[month_num] + " " + year);
             var cells = $("td:not(.days)");
             cells.each(function() {
@@ -96,6 +98,10 @@ $(function() {
             for (i; i <= end; i++) {
                 $(cells[i]).text(j);
                 j++;
+            }
+            //marks present day
+            if(month_num == present_date.getMonth()) {
+                $("td:contains('"+present_day+"')").addClass("present_day");
             }
         });
     }
@@ -227,6 +233,11 @@ $(function() {
         $(".active .note-content").html($(this).html());
     });
 
+    $("td").on("click", function() {
+        $(".selected").removeClass("selected");
+        $(this).addClass("selected");
+    });
+
     //autosave on note container change
     var timeout;
     container.bind("DOMSubtreeModified",function(){
@@ -239,33 +250,6 @@ $(function() {
             setTimeout("$('.loader').hide();", 1200);
         }, 2500);
     });
-
-    /*if (($(".wrapper-dropdown").length) == 0) {
-        for ( var i = 0; i < 4; i++ ) {
-            addNote();
-        }
-    }*/
-    /*$(".wrapper").bind('DOMNodeInserted DOMNodeRemoved',function(){
-        clearTimeout(timeout);
-        timeout = setTimeout(function() {
-            $(".loader").show();
-            pyqtConnect.saveHTML();
-            setTimeout("$('.loader').hide();", 2800);
-        }, 2000);
-    });*/
-
-    /*$("div").each(function() {
-        var colors = ["#ffc", "#cfc", "#BBDEFB", "#BAB7A9"];
-        var rand = Math.floor(Math.random()*colors.length);
-        $(this).css("background-color", colors[rand]);
-    });*/
-
-    /*$("#add").on("click", "button", function() {
-        $(this).fadeToggle(150, function () {
-            addNote();
-            $(this).fadeToggle(150);
-        });
-    });*/
 
     //tekst = qtConnector.showMessage("SuuuperRadi");
 
