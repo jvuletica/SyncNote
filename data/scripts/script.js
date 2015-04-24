@@ -66,7 +66,7 @@ $(function() {
             $(cells[i]).text(j);
             j++;
         }
-        $("td:contains('"+day+"')").addClass("present_day")
+        $("td:contains('"+day+"')").addClass("present_day");
     }
 
     function fillCalendar(direction) {
@@ -75,6 +75,8 @@ $(function() {
         var year = parseInt(date[1]);
         var present_date = new Date();
         var present_day = present_date.getDate();
+        var present_month = present_date.getMonth();
+        var present_year = present_date.getFullYear();
         //increments/decrements months and checks for start/end of year
         if(direction == "next"){
             month_num == 11 ? (month_num = 0, year++) : month_num++;
@@ -100,13 +102,52 @@ $(function() {
                 j++;
             }
             //marks present day
-            if(month_num == present_date.getMonth()) {
+            if(month_num == present_month && year == present_year) {
                 $("td:contains('"+present_day+"')").addClass("present_day");
             }
         });
     }
+    //returns true for clicked date in past
+    function checkIfInPast() {
+        var date = $("#month").text().split(" ");//month, year
+        var month_num = months.indexOf(date[0]);
+        var year = parseInt(date[1]);
+        var day = parseInt($(".selected").text());
+        var present_date = new Date();
+        var present_day = present_date.getDate();
+        var present_month = present_date.getMonth();
+        var present_year = present_date.getFullYear();
+        if((day < present_day) && (month_num == present_month) && (year == present_year)) {
+            return true;
+        }
+        if((month_num < present_month) && (year == present_year)) {
+            return true;
+        }
+        if(year < present_year) return true;
 
-    //WYSIWYG editor buttons below
+        return false;
+    }
+
+    function warnPastDate() {
+        var footer = $("#calendar footer");
+        footer.text("Cant set a past date!");
+        footer.fadeIn();
+        footer.fadeOut(1500);
+        $(".selected").removeClass("selected");
+    }
+
+    function activateDate() {
+        var footer = $("#calendar footer");
+        footer.text("");
+        var html_content = "<div>00h</div><div>:</div>"
+        +"<button id='up'></button>"
+        +"<button id='down'></button>"
+        +"<div>00m</div>"
+        footer.html(html_content);
+        footer.fadeIn();
+    }
+
+    //WYSIWYG editor buttons
     $("#bold").on("click", function() {
         editorCommand("bold");
     });
@@ -204,16 +245,20 @@ $(function() {
         createCalendar();
         $("#editor_box").fadeOut();
         $(".tb-button").fadeOut();
-        $("#calendar").fadeIn();
+        $("#calendar").fadeIn(function() {
+            $("#calendar header").fadeIn();
+        });
         activateNote($(this).parent().parent());
         return false;//prevent propagation
     });
 
     $("#cal-left").on("click", function() {
         fillCalendar("previous");
+        $(".selected").removeClass("selected");
     });
     $("#cal-right").on("click", function() {
         fillCalendar("next");
+        $(".selected").removeClass("selected");
     });
 
     //monitors click on note previews and transfers content to editor
@@ -222,6 +267,7 @@ $(function() {
         //alert($("#calendar").css("display"))
         if($("#calendar").css("display")=="block") {
             $("#calendar").fadeOut();
+            $("#calendar header").css("display", "none");
             $("#editor_box").fadeIn();
             $(".tb-button").fadeIn();
         }
@@ -236,6 +282,7 @@ $(function() {
     $("td").on("click", function() {
         $(".selected").removeClass("selected");
         $(this).addClass("selected");
+        checkIfInPast() ? warnPastDate() : activateDate();
     });
 
     //autosave on note container change

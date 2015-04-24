@@ -250,7 +250,7 @@ input:focus {
     padding: 0 8vw;
     margin: 2px;
 }
-#calendar button {
+#calendar header button {
     position: absolute;
     top: 1%;
     background-color: transparent;
@@ -260,7 +260,7 @@ input:focus {
     height: 34px;
     background-size: 100%;
 }
-#calendar button:hover {
+#calendar header button:hover {
     background-color: #263238;
     border-radius: 10px;
 }
@@ -283,8 +283,9 @@ td {
     transition: background 0.25s linear;
     cursor: default;
 }
-header {
+#calendar header, #calendar footer {
     height: 1em;
+    display: none;
     position: relative;
     width: 44vw;
     text-align: center;
@@ -293,6 +294,36 @@ header {
 .present_day {
     border: 2px solid;
     border-color: #90A4AE;
+}
+#calendar footer{
+    padding: 10px;
+}
+#calendar footer button {
+    position: absolute;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    height: 20px;
+    width: 20px;
+    background-size: 140%;
+    background-position: center;
+    right: 15vw;
+}
+#calendar footer button:hover {
+    background-color: #263238;
+    border-radius: 4px;
+}
+#calendar #up{
+    background-image:url(../img/up.png);
+    top:8%;
+}
+#calendar #down{
+    bottom: -8%;
+    background-image:url(../img/min.png);
+}
+#calendar footer div {
+    margin-right: 10px;
+    display: inline-block;
 }
 /*::-webkit-scrollbar {
     width: 8px;
