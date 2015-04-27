@@ -33,6 +33,7 @@ $(function() {
         selected_note.addClass("active");
         var note_content = selected_note.find(".note-content").html();
         $("#editor_box").html(note_content);
+        $("#editor_box").focus();
     }
 
     //checks if activated note exists, if not, creates a new one
@@ -70,6 +71,7 @@ $(function() {
     }
 
     function fillCalendar(direction) {
+        $("footer, #date_apply").css("display", "none");
         var date = $("#month").text().split(" ");//month, year
         var month_num = months.indexOf(date[0]);
         var year = parseInt(date[1]);
@@ -129,22 +131,63 @@ $(function() {
     }
 
     function warnPastDate() {
+        $("#date_apply").fadeOut(200);
         var footer = $("#calendar footer");
-        footer.text("Cant set a past date!");
+        footer.find("#clock_wrapper").css("display", "none");
+        footer.finish();
         footer.fadeIn();
-        footer.fadeOut(1500);
+        footer.find("#warning_wrapper").fadeIn();
+        footer.fadeOut(2000);
         $(".selected").removeClass("selected");
     }
 
     function activateDate() {
         var footer = $("#calendar footer");
-        footer.text("");
-        var html_content = "<div>00h</div><div>:</div>"
-        +"<button id='up'></button>"
-        +"<button id='down'></button>"
-        +"<div>00m</div>"
-        footer.html(html_content);
+        footer.find("#warning_wrapper").css("display", "none");
+        footer.finish();
         footer.fadeIn();
+        footer.find("#clock_wrapper").fadeIn();
+        $("#date_apply").fadeIn();
+    }
+    function setClock(selected) {
+        var hour = parseInt($("#hour").text().replace("h", ""));
+        var minutes = parseInt($("#minutes").text().replace("m", ""));
+        if(selected == "up") {
+            if($("#minutes").hasClass("chosen")){
+                minutes == 59 ? (minutes = 0, hour++) : minutes++;
+                if(hour == 24) hour = 0;
+            }
+            if($("#hour").hasClass("chosen")){
+                hour == 23 ? hour = 0 : hour++;
+            }
+        }
+        if(selected == "down") {
+            if($("#minutes").hasClass("chosen")){
+                minutes == 0 ? (minutes = 59, hour--) : minutes--;
+                if(hour == -1) hour = 23;
+            }
+            if($("#hour").hasClass("chosen")){
+                hour == 0 ? hour = 23 : hour--;
+            }
+        }
+        hour = String(hour);
+        minutes = String(minutes);
+        if(hour.length == 1) hour = "0" + hour;
+        if(minutes.length == 1) minutes = "0" + minutes;
+        $("#hour").text(hour+"h");
+        $("#minutes").text(minutes+"m");
+    }
+    function applyNotification() {
+        var date = $("#month").text().split(" ");//month, year
+        var month = date[0];
+        var year = date[1];
+        var day = $(".selected").text();
+        var hour = $("#hour").text();
+        var minutes = $("#minutes").text();
+        $("#date").text(day+" "+month+" "+year);
+        $("#time").text(hour+" : "+minutes);
+        $("#calendar").css("display", "none");
+        $("#notification_wrapper").fadeIn();
     }
 
     //WYSIWYG editor buttons
@@ -263,14 +306,13 @@ $(function() {
 
     //monitors click on note previews and transfers content to editor
     container.on("click", ".note", function() {
-        activateNote($(this));
-        //alert($("#calendar").css("display"))
         if($("#calendar").css("display")=="block") {
             $("#calendar").fadeOut();
             $("#calendar header").css("display", "none");
             $("#editor_box").fadeIn();
             $(".tb-button").fadeIn();
         }
+        activateNote($(this));
     });
 
     //transfer contents of editor into active note on input
@@ -284,6 +326,19 @@ $(function() {
         $(this).addClass("selected");
         checkIfInPast() ? warnPastDate() : activateDate();
     });
+
+    $("#clock_wrapper button").on("click", function() {
+        setClock($(this).attr("id"));
+    });
+
+    $(".clock").on("click", function() {
+        $(".clock").removeClass("chosen");
+        $(this).addClass("chosen");
+    })
+
+    $("#date_apply").on("click", function() {
+        applyNotification();
+    })
 
     //autosave on note container change
     var timeout;

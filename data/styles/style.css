@@ -25,6 +25,7 @@ body {
     float:left;
     width: 7vw;
     height: 100vh;
+    -webkit-user-select:none;
 }
 #controls {
     margin: 30vh 0;
@@ -33,11 +34,13 @@ body {
     display: inline-block;
     width: 33vw;
     height: 100vh;
+    -webkit-user-select:none;
 }
 #statusbar {
     width: 33vw;
     height: 6vh;
     overflow: hidden;
+    -webkit-user-select:none;
 }
 #note-container {
     height: 91.3vh;
@@ -105,6 +108,7 @@ body {
 #toolbar {
     width: 60vw;
     height: 6vh;
+    -webkit-user-select:none;
 }
 .button {
     border: none;
@@ -118,11 +122,11 @@ body {
     background-color: #455A64;
     transition: background 0.25s linear;
 }
-button:hover, td:not(.days):hover, td.selected{
+button:hover, td:not(.days):hover, td.selected, .clock:hover{
     background-color: #263238;
 }
 td:empty:hover {
-    background-color: #455A64;
+    background-color: transparent;
 }
 #add {
     background-image:url(../img/add.png);
@@ -240,15 +244,16 @@ input:focus {
     color: #455A64;
     border: none;
 }
-#calendar {
+#calendar ,#notification_wrapper{
     display: none;
     color: white;
     font-size: 16pt;
     outline: none;
-    width: 56vw;
+    width: 43vw;
     height: 88.8vh;
     padding: 0 8vw;
     margin: 2px;
+    -webkit-user-select:none;
 }
 #calendar header button {
     position: absolute;
@@ -292,8 +297,7 @@ td {
     cursor: default;
 }
 .present_day {
-    border: 2px solid;
-    border-color: #90A4AE;
+    border: 2px solid #90A4AE;
 }
 #calendar footer{
     padding: 10px;
@@ -307,7 +311,8 @@ td {
     width: 20px;
     background-size: 140%;
     background-position: center;
-    right: 15vw;
+    margin-left: 120px;
+    left: 0;
 }
 #calendar footer button:hover {
     background-color: #263238;
@@ -315,15 +320,58 @@ td {
 }
 #calendar #up{
     background-image:url(../img/up.png);
-    top:8%;
+    top:-10%;
 }
 #calendar #down{
-    bottom: -8%;
+    bottom: -15%;
     background-image:url(../img/min.png);
 }
 #calendar footer div {
-    margin-right: 10px;
+    margin-right: 4px;
     display: inline-block;
+}
+#date_apply {
+    width: 44vw;
+    height: 10vh;
+    display: none;
+    text-align: center;
+}
+#date_apply button , #date_cancel button{
+    outline: none;
+    border:none;
+    border-bottom: 2px solid #90A4AE;
+    color: white;
+    background-color: transparent;
+    width: 120px;
+    height: 45px;
+    margin: 30px 0 0 20px;
+    border-radius: 10px;
+    border: 2px solid
+    transition: background 0.25s linear;
+}
+#date_apply button:hover, #date_cancel button:hover {
+    background-color: #263238;
+}
+#warning_wrapper, #clock_wrapper {
+    display: none;
+    position: relative;
+}
+.clock {
+    transition: background 0.25s linear;
+    padding: 4px;
+    border-radius: 6px;
+}
+.clock.chosen {
+    border-bottom: 2px solid #90A4AE;
+}
+#notification_wrapper {
+    position: absolute;
+    top: 32%;
+    font-size: 26pt;
+    text-align: center;
+}
+#date_cancel button {
+    font-size: 16pt;
 }
 /*::-webkit-scrollbar {
     width: 8px;

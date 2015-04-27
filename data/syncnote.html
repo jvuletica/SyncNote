@@ -114,7 +114,24 @@
                     <td></td>
                 </tr>
             </table>
-            <footer></footer>
+            <footer>
+                <div id="clock_wrapper">
+                    <div>
+                        <div id="hour" class="clock">00h</div>
+                        <div>:</div>
+                        <div id="minutes" class="clock chosen">00m</div>
+                    </div>
+                    <button id='up'></button>
+                    <button id='down'></button>
+                </div>
+                <div id="warning_wrapper">Can't set a past date!</div>
+            </footer>
+            <div id="date_apply"><button>Apply!</button></div>
+        </div>
+        <div id="notification_wrapper">
+            <div id="date"></div>
+            <div id="time"></div>
+            <div id="date_cancel"><button>Cancel!</button></div>
         </div>
     </div>
     <div id="login_wrapper">
