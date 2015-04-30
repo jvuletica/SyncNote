@@ -20,8 +20,8 @@ $(function() {
         $("#note-container").prepend($(''
         + '<div class="note">'
         + '<div class="note-controls-wrapper">'
-        + '<div id="calendar-btn" class="note-controls"></div>'
-        + '<div id="remove-note-btn" class="note-controls"></div>'
+        + '<div title="Calendar" id="calendar-btn" class="note-controls"></div>'
+        + '<div title="Close" id="remove-note-btn" class="note-controls"></div>'
         + '</div>'
         + '<div class="note-content"></div>'
         + '</div>').fadeIn(200));
@@ -59,6 +59,9 @@ $(function() {
         var year = date.getFullYear();
         $("#month").text(months[month_num] + " " + year);
         var cells = $("td:not(.days)");
+        cells.each(function() {
+            $(this).text("");
+        });
         var day_stats = daysInMonth(month_num, year);
         var i = day_stats[1];
         var end = day_stats[0] + i - 1;
@@ -184,8 +187,31 @@ $(function() {
         var day = $(".selected").text();
         var hour = $("#hour").text();
         var minutes = $("#minutes").text();
-        $("#date").text(day+" "+month+" "+year);
-        $("#time").text(hour+" : "+minutes);
+        var date_string = day + " " + month + " " + year;
+        var time_string = hour + " : " + minutes;
+        $(".note.active").attr("data-date", date_string);
+        $(".note.active").attr("data-time", time_string);
+        $("#date").text(date_string);
+        $("#time").text(time_string);
+        $("#calendar").css("display", "none");
+        $("#notification_wrapper").fadeIn();
+    }
+    function cancelNotification() {
+        $(".note.active").removeAttr("data-date");
+        $(".note.active").removeAttr("data-time");
+        $("#notification_wrapper").css("display", "none");
+        createCalendar();
+        $("#calendar").fadeIn(function() {
+            $("#calendar header").fadeIn();
+        });
+    }
+    function showNotification(note_selector) {
+        var date_string = note_selector.attr("data-date");
+        var time_string = note_selector.attr("data-time");
+        $("#date").text(date_string);
+        $("#time").text(time_string);
+        $("#editor_box").css("display", "none");
+        $(".tb-button").css("display", "none");
         $("#calendar").css("display", "none");
         $("#notification_wrapper").fadeIn();
     }
@@ -250,11 +276,16 @@ $(function() {
         if(display_state == "none") {
             $("body > :not(#controls_wrapper)").fadeOut();
             $("#note_preview_wrapper").fadeIn();
-            $("#editor_wrapper").fadeIn();            
+            $("#editor_wrapper").fadeIn();
         }
         else {
             addNote();
             activateNote($(".note").first());
+            if($("#editor_box").css("display") == "none") {
+                $("#notification_wrapper").css("display", "none");
+                $("#editor_box").fadeIn();
+                $(".tb-button").fadeIn();
+            }
         }      
     });
     $("#login").on("click", function() {
@@ -285,14 +316,22 @@ $(function() {
     });
 
     container.on("click", "#calendar-btn", function() {
-        createCalendar();
-        $("#editor_box").fadeOut();
-        $(".tb-button").fadeOut();
-        $("#calendar").fadeIn(function() {
-            $("#calendar header").fadeIn();
-        });
-        activateNote($(this).parent().parent());
-        return false;//prevent propagation
+        var this_note = $(this).parent().parent();
+        var this_attr = this_note.attr("data-date");
+        if(typeof this_attr == typeof "string") showNotification(this_note);
+        else {
+            createCalendar();
+            $("#editor_box").css("display","none");
+            $(".tb-button").css("display","none");
+            $("#notification_wrapper").css("display","none");
+            $("#calendar").fadeIn(function() {
+                $("#calendar header").fadeIn();
+            });
+        }
+        $(".selected").removeClass("selected");
+        $("footer, #date_apply").css("display", "none");
+        activateNote(this_note);
+        return false;//prevent propagation of click to parent
     });
 
     $("#cal-left").on("click", function() {
@@ -307,8 +346,13 @@ $(function() {
     //monitors click on note previews and transfers content to editor
     container.on("click", ".note", function() {
         if($("#calendar").css("display")=="block") {
-            $("#calendar").fadeOut();
+            $("#calendar").css("display", "none");
             $("#calendar header").css("display", "none");
+            $("#editor_box").fadeIn();
+            $(".tb-button").fadeIn();
+        }
+        else if($("#notification_wrapper").css("display")=="block") {
+            $("#notification_wrapper").css("display", "none");
             $("#editor_box").fadeIn();
             $(".tb-button").fadeIn();
         }
@@ -334,11 +378,14 @@ $(function() {
     $(".clock").on("click", function() {
         $(".clock").removeClass("chosen");
         $(this).addClass("chosen");
-    })
+    });
 
     $("#date_apply").on("click", function() {
         applyNotification();
-    })
+    });
+    $("#date_cancel").on("click", function() {
+        cancelNotification();
+    });
 
     //autosave on note container change
     var timeout;

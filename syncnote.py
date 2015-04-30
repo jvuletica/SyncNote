@@ -41,7 +41,6 @@ class TitleBar(QtWidgets.QDialog):
         label=QtWidgets.QLabel(self)
         label.setText(" SyncNote")
         label.setToolTip("Author: Josip Vuletić Antić")
-        self.setWindowTitle("Window Title")
         hbox=QtWidgets.QHBoxLayout(self)
         hbox.addWidget(label)
         hbox.addWidget(self.minimize)
@@ -100,7 +99,6 @@ class Ui_Form(QtWidgets.QWidget):
 
         self.webView = QtWebKitWidgets.QWebView(Form)
         path = os.path.dirname(os.path.realpath("__file__"))
-        #self.webView.setUrl(QtCore.QUrl.fromLocalFile(path + "/data/syncnote.html"))
         self.webView.setHtml(self.getHTML(), QtCore.QUrl.fromLocalFile(path + "/data/"))
         self.webView.setObjectName("webView")
         self.verticalLayout.addWidget(self.webView)
