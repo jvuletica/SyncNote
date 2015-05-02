@@ -26,7 +26,7 @@ class TitleBar(QtWidgets.QDialog):
         self.minimize.setIcon(QtGui.QIcon('data/img/min.png'))
 
         self.maximize=QtWidgets.QToolButton(self)
-        self.maximize.setIcon(QtGui.QIcon('data/img/min-max.png'))
+        self.maximize.setIcon(QtGui.QIcon('data/img/up.png'))
 
         close=QtWidgets.QToolButton(self)
         close.setIcon(QtGui.QIcon('data/img/close.png'))
@@ -63,7 +63,7 @@ class TitleBar(QtWidgets.QDialog):
         if(self.maxNormal):
             syncnote.showNormal()
             self.maxNormal= False
-            self.maximize.setIcon(QtGui.QIcon('data/img/min-max.png'))
+            self.maximize.setIcon(QtGui.QIcon('data/img/up.png'))
 
         else:
             syncnote.showMaximized()
@@ -105,6 +105,8 @@ class Ui_Form(QtWidgets.QWidget):
 
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         self.verticalLayout.setSpacing(0)
+        #self.tray_icon = QtWidgets.QSystemTrayIcon(QtGui.QIcon("data/img/sync.png"), self)
+        #self.tray_icon.show()
 
         self.retranslateUi(Form)
 
@@ -154,5 +156,5 @@ if __name__ == '__main__':
     #JQt_instance = Js_To_Qt()
     syncnote.webView.page().mainFrame().addToJavaScriptWindowObject("pyqtConnect",syncnote)
     exit = appSynNt.exec_()
-    #syncnote.saveHTML()
+    #syncnote.tray_icon.hide()
     sys.exit(exit)
