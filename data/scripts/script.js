@@ -4,9 +4,12 @@ $(function() {
     alertify.defaults.transition = "fade";
     alertify.defaults.closable = false;
     alertify.defaults.movable = false;
-
-    var weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday",
-    "Thursday", "Friday", "Saturday"];
+    var autosave_interval;
+    var autosave_state;
+    var save_location;
+    pySettingsToJs();
+    /*var weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday",
+    "Thursday", "Friday", "Saturday"];*/
     var months = ["January", "February", "March", "April",
     "May", "June", "July", "August", "September", "October",
     "November", "December"];
@@ -223,6 +226,25 @@ $(function() {
         $("#calendar").css("display", "none");
         $("#notification_wrapper").fadeIn();
     }
+    function setAutosaveInterval(selected) {
+        if(selected == "interval_up" && autosave_interval < 10000) {
+            autosave_interval = autosave_interval + 500;
+        }
+        else if(selected == "interval_down" && autosave_interval > 500) {
+            autosave_interval = autosave_interval - 500;
+        }
+        $("#interval_controls label").text(autosave_interval + " ms");
+    }
+    function pySettingsToJs() {
+        autosave_interval = parseInt(pyQtConnect.returnInterval());
+        autosave_state = pyQtConnect.returnAutosaveState();
+        save_location = pyQtConnect.returnSaveLocation();
+        $("#interval_controls label").text(autosave_interval + " ms");
+    }
+    function saveSettings() {
+        pyQtConnect.jsSettingsToPy(autosave_interval, autosave_state, save_location);
+        pyQtConnect.saveSettings();
+    }
 
     //WYSIWYG editor buttons
     $("#bold").on("click", function() {
@@ -282,6 +304,7 @@ $(function() {
     $("#add").on("click", function() {
         var display_state = $("#note_preview_wrapper").css("display");
         if(display_state == "none") {
+            pySettingsToJs();
             $("body > :not(#controls_wrapper)").fadeOut();
             $("#note_preview_wrapper").fadeIn();
             $("#editor_wrapper").fadeIn();
@@ -301,8 +324,17 @@ $(function() {
         $("#login_wrapper").fadeIn();
     });
     $("#options").on("click", function() {
+        pySettingsToJs();
         $("body > :not(#controls_wrapper)").fadeOut();
         $("#options_wrapper").fadeIn();
+        if(autosave_state == "enabled") {
+            $("#note_autosave_check").css("display", "block")
+        }
+        else if(autosave_state == "disabled") {
+            $("#note_autosave_notchecked").css("display", "block")
+            $("#note_autosave_interval").parent().css("opacity", "0.5");
+            $("#interval_controls button").css("display", "none");
+        }
     });
 
     // caching the note-container selector
@@ -386,6 +418,15 @@ $(function() {
         setClock($(this).attr("id"));
     });
 
+    $("#interval_controls button").on("click", function() {
+        setAutosaveInterval($(this).attr("id"));
+    });
+
+    $("#save_location label").on("click", function() {
+        new_save_location = pyQtConnect.setSaveLocation();
+        if(new_save_location) save_location = new_save_location;
+    })
+
     $(".clock").on("click", function() {
         $(".clock").removeClass("chosen");
         $(this).addClass("chosen");
@@ -398,19 +439,51 @@ $(function() {
         cancelNotification();
     });
 
+    //switch the default text with file location on hover
+    $("#save_location label").hover(function() {
+            $(this).data("Autosave interval", $(this).text());
+            $(this).text(save_location);
+            //$(this).attr("title", save_location);
+        },function() {
+            $(this).text($(this).data("Autosave interval"));
+        }
+    );
+    $("#apply_settings button").on("click", function() {
+        saveSettings();
+        $interval_controls = $("#interval_controls button");
+        if($interval_controls.css("display") == "none") {
+            $interval_controls.css("display", "block");
+            $("#interval_controls").parent().css("opacity", "1");
+        }
+        else {
+            $interval_controls.css("display", "none");
+            $("#interval_controls").parent().css("opacity", "0.5");
+        }
+    });
+    $("#note_autosave_check").on("click", function() {
+        autosave_state = "disabled";
+        $(this).css("display", "none");
+        $("#note_autosave_notchecked").fadeIn();
+    });
+    $("#note_autosave_notchecked").on("click", function() {
+        autosave_state = "enabled";
+        $(this).css("display", "none");
+        $("#note_autosave_check").fadeIn();
+    });
+
     //autosave on note container change
     var timeout;
     container.bind("DOMSubtreeModified",function(){
-        clearTimeout(timeout);
-        timeout = setTimeout(function() {
-            $(".loader").show();
-            //remove active class and save html
-            var $notes = container.html().replace(" active","");
-            pyqtConnect.saveNotes($notes); 
-            setTimeout("$('.loader').hide();", 1200);
-        }, 2500);
+        if(autosave_state == "enabled") {
+            clearTimeout(timeout);
+            timeout = setTimeout(function() {
+                $(".loader").show();
+                //remove active class and save html
+                var notes = container.html().replace(" active","");
+                pyQtConnect.saveNotes(notes); 
+                setTimeout("$('.loader').hide();", 1200);
+            }, autosave_interval);
+        }
+
     });
-
-    //tekst = qtConnector.showMessage("SuuuperRadi");
-
 });

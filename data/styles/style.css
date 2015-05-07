@@ -338,7 +338,7 @@ td {
     display: none;
     text-align: center;
 }
-#date_apply button , #date_cancel button{
+#date_apply button , #date_cancel button, #apply_settings button{
     outline: none;
     border:none;
     border-bottom: 2px solid #90A4AE;
@@ -377,9 +377,11 @@ td {
 }
 #options_position {
     position: absolute;
-    left: 34%;
-    top: 28%;
-    width: 340px;
+    left: 32%;
+    top: 22%;
+    width: 360px;
+    border: 2px solid #90A4AE;
+    border-radius: 6px;
 }
 .options {
     margin: 28px;
@@ -398,19 +400,35 @@ td {
     background-position: center;
     display: inline-block;
 }
+#save_location label{
+    transition: background 0.25s linear;
+    overflow: hidden;
+    word-wrap: auto;
+    display: inline-block;
+    margin-bottom: -10px;
+    max-width: 255px;
+    height: 1em;
+}
 #note_location {
     background-image:url(../img/location.png);
 }
 #note_autosave {
     background-image:url(../img/save.png);
 }
-#note_autosave_check {
+#note_autosave_check, #note_autosave_notchecked{
     margin-top: 5px;
-    margin-right: 40px;
+    margin-right: 62px;
     float: right;
-    background-image:url(../img/check.png);
     border-radius: 6px;
-    border-bottom: 2px solid #90A4AE;
+    border: 2px solid #90A4AE;
+}
+#note_autosave_check {
+    background-image:url(../img/check.png);
+    display: none;
+}
+#note_autosave_notchecked {
+    background-image:url(../img/close.png);
+    display: none;
 }
 #note_autosave_interval {
     background-image:url(../img/clock.png);
@@ -418,7 +436,7 @@ td {
 #interval_controls {
     float:right;
     height: 1.4em;
-    width: 76px;
+    width: 120px;
     position: relative;
 }
 #interval_controls button {
@@ -439,4 +457,11 @@ td {
 #interval_down{
     bottom: -30%;
     background-image:url(../img/min.png);
+}
+#apply_settings button {
+    margin-left: 90px;
+    transition: background 0.25s linear;
+}
+#apply_settings button:hover {
+    background-color: #263238;
 }
