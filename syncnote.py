@@ -81,7 +81,7 @@ class TitleBar(QtWidgets.QDialog):
         if syncnote.moving: syncnote.move(event.globalPos()-syncnote.offset)
 
 class Ui_Form(QtWidgets.QWidget):
-    saveLocation = "data"
+    save_location = "data"
     autosave_state = "enabled"
     autosave_interval = "2500"
     def __init__(self):
@@ -108,8 +108,9 @@ class Ui_Form(QtWidgets.QWidget):
 
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         self.verticalLayout.setSpacing(0)
-        #self.tray_icon = QtWidgets.QSystemTrayIcon(QtGui.QIcon("data/img/sync.png"), self)
-        #self.tray_icon.show()
+        #self.sysTray = QtWidgets.QSystemTrayIcon(self)
+        #self.sysTray.setIcon( QtGui.QIcon("data/img/sync.png"))
+        #self.sysTray.show()
 
         self.retranslateUi(Form)
 
@@ -133,7 +134,7 @@ class Ui_Form(QtWidgets.QWidget):
 
     @QtCore.pyqtSlot(result=str)    
     def returnSaveLocation(self):
-        return self.saveLocation
+        return self.save_location
 
     @QtCore.pyqtSlot(str, str, str)
     def jsSettingsToPy(self, autosave_interval, autosave_state, save_location):
@@ -143,13 +144,13 @@ class Ui_Form(QtWidgets.QWidget):
 
     @QtCore.pyqtSlot(str)
     def saveNotes(self, notes):
-        file = open(self.saveLocation + "/notes.html", "w")
+        file = open(self.save_location + "/notes.html", "w")
         file.write(notes)
         file.close()
 
     def getNotes(self):
         try:
-            file = open(self.saveLocation + "/notes.html","r")
+            file = open(self.save_location + "/notes.html","r")
             notes = file.read()
             file.close()
             return notes
@@ -157,6 +158,7 @@ class Ui_Form(QtWidgets.QWidget):
             return False
 
     def getHTML(self):
+        self.loadSettings()
         file = open("data/syncnote.html", "r")
         html_backup = file.read()
         file.close()
@@ -173,7 +175,7 @@ class Ui_Form(QtWidgets.QWidget):
         try:
             file = open("data/settings", "r")
             lines = [line.strip().split(" = ") for line in file]
-            self.saveLocation = lines[0][1]
+            self.save_location = lines[0][1]
             self.autosave_state = lines[1][1]
             self.autosave_interval = lines[2][1]
         except:
@@ -182,7 +184,7 @@ class Ui_Form(QtWidgets.QWidget):
     @QtCore.pyqtSlot()
     def saveSettings(self):
         file = open("data/settings", "w")
-        file.write("Save location = " + self.saveLocation + "\n")
+        file.write("Save location = " + self.save_location + "\n")
         file.write("Autosave = " + self.autosave_state + "\n")
         file.write("Autosave interval = " + self.autosave_interval)
         file.close()
@@ -198,9 +200,6 @@ if __name__ == '__main__':
     syncnote.move(QtWidgets.QApplication.desktop().screen().rect().center()
     - syncnote.rect().center())
     syncnote.show()
-    syncnote.loadSettings()
-    #JQt_instance = Js_To_Qt()
     syncnote.webView.page().mainFrame().addToJavaScriptWindowObject("pyQtConnect",syncnote)
     exit = appSynNt.exec_()
-    #syncnote.tray_icon.hide()
     sys.exit(exit)

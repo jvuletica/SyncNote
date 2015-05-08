@@ -8,8 +8,12 @@ $(function() {
     var autosave_state;
     var save_location;
     pySettingsToJs();
-    /*var weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday",
-    "Thursday", "Friday", "Saturday"];*/
+
+    // caching the note-container selector
+    var container = $("#note-container");
+
+    if(autosave_state == "disabled") $("#save").show();
+
     var months = ["January", "February", "March", "April",
     "May", "June", "July", "August", "September", "October",
     "November", "December"];
@@ -242,8 +246,17 @@ $(function() {
         $("#interval_controls label").text(autosave_interval + " ms");
     }
     function saveSettings() {
+        if(autosave_state == "enabled") $("#save").fadeOut();
+        else if(autosave_state == "disabled") $("#save").fadeIn();
         pyQtConnect.jsSettingsToPy(autosave_interval, autosave_state, save_location);
         pyQtConnect.saveSettings();
+    }
+    function manualSave() {
+        $(".loader").show();
+        //remove active class and save html
+        var notes = container.html().replace(" active","");
+        pyQtConnect.saveNotes(notes); 
+        setTimeout("$('.loader').hide();", 1200);
     }
 
     //WYSIWYG editor buttons
@@ -336,9 +349,6 @@ $(function() {
             $("#interval_controls button").css("display", "none");
         }
     });
-
-    // caching the note-container selector
-    var container = $("#note-container");
 
     //shows confirm dialog and removes note if confirmed
     container.on("click", "#remove-note-btn", function() {
@@ -441,13 +451,15 @@ $(function() {
 
     //switch the default text with file location on hover
     $("#save_location label").hover(function() {
+        if(save_location != "data") {
             $(this).data("Autosave interval", $(this).text());
             $(this).text(save_location);
             //$(this).attr("title", save_location);
-        },function() {
-            $(this).text($(this).data("Autosave interval"));
         }
-    );
+    },function() {
+        $(this).text($(this).data("Autosave interval"));
+    });
+
     $("#apply_settings button").on("click", function() {
         saveSettings();
         $interval_controls = $("#interval_controls button");
@@ -470,6 +482,9 @@ $(function() {
         $(this).css("display", "none");
         $("#note_autosave_check").fadeIn();
     });
+    $("#save").on("click", function() {
+        manualSave();
+    });
 
     //autosave on note container change
     var timeout;
@@ -477,11 +492,7 @@ $(function() {
         if(autosave_state == "enabled") {
             clearTimeout(timeout);
             timeout = setTimeout(function() {
-                $(".loader").show();
-                //remove active class and save html
-                var notes = container.html().replace(" active","");
-                pyQtConnect.saveNotes(notes); 
-                setTimeout("$('.loader').hide();", 1200);
+                manualSave();
             }, autosave_interval);
         }
 

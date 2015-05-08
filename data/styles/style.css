@@ -139,6 +139,10 @@ td:empty:hover {
 #options {
     background-image:url(../img/options.png);
 }
+#save {
+    display: none;
+    background-image:url(../img/save.png);
+}
 .tb-button {
     border: none;
     outline: none;
@@ -407,6 +411,7 @@ td {
     display: inline-block;
     margin-bottom: -10px;
     max-width: 255px;
+    min-width: 100px;
     height: 1em;
 }
 #note_location {
