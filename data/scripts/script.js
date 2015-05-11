@@ -8,6 +8,7 @@ $(function() {
     var autosave_state;
     var save_location;
     pySettingsToJs();
+    //calculateNotification();
 
     // caching the note-container selector
     var container = $("#note-container");
@@ -55,7 +56,6 @@ $(function() {
     function daysInMonth(month,year) {
         var first_day = new Date(year, month, 1).getDay();
         var days_count = new Date(year, month + 1, 0).getDate();
-        var day_name = weekdays[first_day];
         return [days_count, first_day];
     }
 
@@ -80,7 +80,6 @@ $(function() {
         $("#calendar td").each(function() {
             if($(this).text() == day) $(this).addClass("present_day");
         })
-        //$("td:contains('"+day+"')").addClass("present_day");
     }
 
     function fillCalendar(direction) {
@@ -220,7 +219,7 @@ $(function() {
             $("#calendar header").fadeIn();
         });
     }
-    function showNotification(note_selector) {
+    function showNotificationInfo(note_selector) {
         var date_string = note_selector.attr("data-date");
         var time_string = note_selector.attr("data-time");
         $("#date").text(date_string);
@@ -246,8 +245,8 @@ $(function() {
         $("#interval_controls label").text(autosave_interval + " ms");
     }
     function saveSettings() {
-        if(autosave_state == "enabled") $("#save").fadeOut();
-        else if(autosave_state == "disabled") $("#save").fadeIn();
+        //if(autosave_state == "enabled") $("#save").fadeOut();
+        //else if(autosave_state == "disabled") $("#save").fadeIn();
         pyQtConnect.jsSettingsToPy(autosave_interval, autosave_state, save_location);
         pyQtConnect.saveSettings();
     }
@@ -257,6 +256,15 @@ $(function() {
         var notes = container.html().replace(" active","");
         pyQtConnect.saveNotes(notes); 
         setTimeout("$('.loader').hide();", 1200);
+    }
+    function calculateNotification() {
+        var date;
+        var time;
+        $(".note").each(function() {
+            $this_date = $(this).attr("data-date");
+            $this_time = $(this).attr("data-time");
+            if($this_date) alert($this_date);
+        });
     }
 
     //WYSIWYG editor buttons
@@ -332,10 +340,10 @@ $(function() {
             }
         }      
     });
-    $("#login").on("click", function() {
+    /*$("#login").on("click", function() {
         $("body > :not(#controls_wrapper)").fadeOut();
         $("#login_wrapper").fadeIn();
-    });
+    });*/
     $("#options").on("click", function() {
         pySettingsToJs();
         $("body > :not(#controls_wrapper)").fadeOut();
@@ -368,7 +376,7 @@ $(function() {
     container.on("click", "#calendar-btn", function() {
         var this_note = $(this).parent().parent();
         var this_attr = this_note.attr("data-date");
-        if(typeof this_attr == typeof "string") showNotification(this_note);
+        if(typeof this_attr == typeof "string") showNotificationInfo(this_note);
         else {
             createCalendar();
             $("#editor_box").css("display","none");
@@ -382,6 +390,7 @@ $(function() {
         $("footer, #date_apply").css("display", "none");
         activateNote(this_note);
         return false;//prevent propagation of click to parent
+        alert("klik");
     });
 
     $("#cal-left").on("click", function() {
@@ -435,7 +444,7 @@ $(function() {
     $("#save_location label").on("click", function() {
         new_save_location = pyQtConnect.setSaveLocation();
         if(new_save_location) save_location = new_save_location;
-    })
+    });
 
     $(".clock").on("click", function() {
         $(".clock").removeClass("chosen");
@@ -495,6 +504,5 @@ $(function() {
                 manualSave();
             }, autosave_interval);
         }
-
     });
 });

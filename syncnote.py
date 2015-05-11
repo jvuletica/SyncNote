@@ -49,7 +49,6 @@ class TitleBar(QtWidgets.QDialog):
         hbox.insertStretch(1,500)
         hbox.setSpacing(0)
         self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Fixed)
-        self.maxNormal=False
 
         close.clicked.connect(self.close)
         self.minimize.clicked.connect(self.showSmall)
@@ -57,20 +56,20 @@ class TitleBar(QtWidgets.QDialog):
 
 
     def showSmall(self):
-        syncnote.showMinimized()
+        syncnote.hide()
+        #syncnote.showMinimized()
 
     def showMaxRestore(self):
-        if(self.maxNormal):
+        if(syncnote.isMaximized()):
             syncnote.showNormal()
-            self.maxNormal= False
-            self.maximize.setIcon(QtGui.QIcon('data/img/up.png'))
+            self.maximize.setIcon(QtGui.QIcon("data/img/up.png"))
 
         else:
             syncnote.showMaximized()
-            self.maxNormal=  True
-            self.maximize.setIcon(QtGui.QIcon('data/img/max-min.png'))
+            self.maximize.setIcon(QtGui.QIcon("data/img/max-min.png"))
 
     def close(self):
+        syncnote.sysTray.hide()
         syncnote.close()
 
     def mousePressEvent(self,event):
@@ -91,7 +90,7 @@ class Ui_Form(QtWidgets.QWidget):
         Form.setObjectName("Form")
         Form.resize(900, 600)
         Form.setStyleSheet("background-color:#455A64;")
-        self.setWindowIcon(QtGui.QIcon("data/img/sync.png"))
+        self.setWindowIcon(QtGui.QIcon("data/img/syncnote_icon.png"))
 
         self.verticalLayout = QtWidgets.QVBoxLayout(Form)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -108,9 +107,10 @@ class Ui_Form(QtWidgets.QWidget):
 
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         self.verticalLayout.setSpacing(0)
-        #self.sysTray = QtWidgets.QSystemTrayIcon(self)
-        #self.sysTray.setIcon( QtGui.QIcon("data/img/sync.png"))
-        #self.sysTray.show()
+        self.sysTray = QtWidgets.QSystemTrayIcon(self)
+        self.sysTray.setIcon(QtGui.QIcon("data/img/syncnote_icon.png"))
+        self.sysTray.show()
+        self.sysTray.activated.connect(self.show)
 
         self.retranslateUi(Form)
 
@@ -199,7 +199,8 @@ if __name__ == '__main__':
     syncnote = Ui_Form()
     syncnote.move(QtWidgets.QApplication.desktop().screen().rect().center()
     - syncnote.rect().center())
-    syncnote.show()
+    syncnote.sysTray.showMessage("SyncNote","Started in system tray.", 1, 2000)
+    #syncnote.show()
     syncnote.webView.page().mainFrame().addToJavaScriptWindowObject("pyQtConnect",syncnote)
     exit = appSynNt.exec_()
     sys.exit(exit)

@@ -140,7 +140,6 @@ td:empty:hover {
     background-image:url(../img/options.png);
 }
 #save {
-    display: none;
     background-image:url(../img/save.png);
 }
 .tb-button {
