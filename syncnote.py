@@ -148,6 +148,11 @@ class Ui_Form(QtWidgets.QWidget):
         file.write(notes)
         file.close()
 
+    @QtCore.pyqtSlot(str)
+    def notificationWarning(self, warning):
+        self.sysTray.showMessage("SyncNote", warning, 2, 2000)
+        appSynNt.beep();
+
     def getNotes(self):
         try:
             file = open(self.save_location + "/notes.html","r")
@@ -199,7 +204,7 @@ if __name__ == '__main__':
     syncnote = Ui_Form()
     syncnote.move(QtWidgets.QApplication.desktop().screen().rect().center()
     - syncnote.rect().center())
-    syncnote.sysTray.showMessage("SyncNote","Started in system tray.", 1, 2000)
+    syncnote.sysTray.showMessage("SyncNote","Launched in system tray.", 1, 2000)
     #syncnote.show()
     syncnote.webView.page().mainFrame().addToJavaScriptWindowObject("pyQtConnect",syncnote)
     exit = appSynNt.exec_()

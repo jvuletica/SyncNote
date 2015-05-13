@@ -4,16 +4,17 @@ $(function() {
     alertify.defaults.transition = "fade";
     alertify.defaults.closable = false;
     alertify.defaults.movable = false;
+    //variables in which settings are stored
     var autosave_interval;
     var autosave_state;
     var save_location;
+    //load settings to js
     pySettingsToJs();
-    //calculateNotification();
+    //check for timed note on launch
+    calculateNotification();
 
     // caching the note-container selector
     var container = $("#note-container");
-
-    if(autosave_state == "disabled") $("#save").show();
 
     var months = ["January", "February", "March", "April",
     "May", "June", "July", "August", "September", "October",
@@ -125,7 +126,7 @@ $(function() {
             }
         });
     }
-    //returns true for clicked date in past
+    //returns true if clicked date is in past
     function checkIfInPast() {
         var date = $("#month").text().split(" ");//month, year
         var month_num = months.indexOf(date[0]);
@@ -135,15 +136,19 @@ $(function() {
         var present_day = present_date.getDate();
         var present_month = present_date.getMonth();
         var present_year = present_date.getFullYear();
-        if((day < present_day) && (month_num == present_month) && (year == present_year)) {
+        if((day < present_day) && (month_num == present_month) && (year == present_year))
             return true;
-        }
-        if((month_num < present_month) && (year == present_year)) {
+        if((month_num < present_month) && (year == present_year))
             return true;
-        }
-        if(year < present_year) return true;
+        if(year < present_year)
+            return true;
 
         return false;
+    }
+    function isTimeInPast(complete_date) {
+        var complete_date_object = new Date(Date.parse(complete_date));
+        var current_date = new Date();
+        return complete_date_object < current_date ? true : false;
     }
 
     function warnPastDate() {
@@ -166,8 +171,8 @@ $(function() {
         $("#date_apply").fadeIn();
     }
     function setClock(selected) {
-        var hour = parseInt($("#hour").text().replace("h", ""));
-        var minutes = parseInt($("#minutes").text().replace("m", ""));
+        var hour = parseInt($("#hour").text());
+        var minutes = parseInt($("#minutes").text());
         if(selected == "up") {
             if($("#minutes").hasClass("chosen")){
                 minutes == 59 ? (minutes = 0, hour++) : minutes++;
@@ -190,8 +195,8 @@ $(function() {
         minutes = String(minutes);
         if(hour.length == 1) hour = "0" + hour;
         if(minutes.length == 1) minutes = "0" + minutes;
-        $("#hour").text(hour+"h");
-        $("#minutes").text(minutes+"m");
+        $("#hour").text(hour);
+        $("#minutes").text(minutes);
     }
     function applyNotification() {
         var date = $("#month").text().split(" ");//month, year
@@ -200,14 +205,20 @@ $(function() {
         var day = $(".selected").text();
         var hour = $("#hour").text();
         var minutes = $("#minutes").text();
-        var date_string = day + " " + month + " " + year;
-        var time_string = hour + " : " + minutes;
-        $(".note.active").attr("data-date", date_string);
-        $(".note.active").attr("data-time", time_string);
-        $("#date").text(date_string);
-        $("#time").text(time_string);
-        $("#calendar").css("display", "none");
-        $("#notification_wrapper").fadeIn();
+        var date_string = month + " " + day + ", " + year;
+        var time_string = hour + ":" + minutes;
+        var complete_date = date_string + " " + time_string;
+        if(isTimeInPast(complete_date)) {
+            warnPastDate();
+        }
+        else {
+            $(".note.active").attr("data-date", date_string);
+            $(".note.active").attr("data-time", time_string);
+            $("#date").text(date_string);
+            $("#time").text(time_string);
+            $("#calendar").css("display", "none");
+            $("#notification_wrapper").fadeIn();
+        }
     }
     function cancelNotification() {
         $(".note.active").removeAttr("data-date");
@@ -218,6 +229,7 @@ $(function() {
         $("#calendar").fadeIn(function() {
             $("#calendar header").fadeIn();
         });
+        $("#clock_wrapper, #date_apply").hide();
     }
     function showNotificationInfo(note_selector) {
         var date_string = note_selector.attr("data-date");
@@ -257,14 +269,34 @@ $(function() {
         pyQtConnect.saveNotes(notes); 
         setTimeout("$('.loader').hide();", 1200);
     }
+    var notification_timeout;
+    var targeted_note;
     function calculateNotification() {
-        var date;
-        var time;
+        var date_time;
         $(".note").each(function() {
-            $this_date = $(this).attr("data-date");
-            $this_time = $(this).attr("data-time");
-            if($this_date) alert($this_date);
+            this_date = $(this).attr("data-date");
+            this_time = $(this).attr("data-time");
+            var new_date_time = this_date + " " + this_time;
+            if(date_time == undefined || (Date.parse(new_date_time) < Date.parse(date_time))) {
+                date_time = new_date_time;
+                targeted_note = $(this);
+            }
         });
+        var date_time_object = new Date(Date.parse(date_time));
+        //calculates miliseconds between selected time and current time
+        miliseconds = date_time_object - new Date();
+        clearTimeout(notification_timeout);
+        if(miliseconds > 0) {
+            notification_timeout = setTimeout(function() {
+                pyQtConnect.notificationWarning("Set time for note has expired, note is marked.");
+                targeted_note.removeAttr("data-date");
+                targeted_note.removeAttr("data-time");
+                targeted_note.addClass("warning");
+                // calls itself to set notification for next note if it exists
+                calculateNotification();
+            }, miliseconds);
+        }
+
     }
 
     //WYSIWYG editor buttons
@@ -376,6 +408,7 @@ $(function() {
     container.on("click", "#calendar-btn", function() {
         var this_note = $(this).parent().parent();
         var this_attr = this_note.attr("data-date");
+        //checks if note already has date-time set
         if(typeof this_attr == typeof "string") showNotificationInfo(this_note);
         else {
             createCalendar();
@@ -390,7 +423,6 @@ $(function() {
         $("footer, #date_apply").css("display", "none");
         activateNote(this_note);
         return false;//prevent propagation of click to parent
-        alert("klik");
     });
 
     $("#cal-left").on("click", function() {
@@ -416,6 +448,10 @@ $(function() {
             $(".tb-button").fadeIn();
         }
         activateNote($(this));
+        if($(this).hasClass("warning")) {
+            $(this).removeClass("warning");
+            manualSave();
+        }
     });
 
     //transfer contents of editor into active note on input
@@ -424,6 +460,7 @@ $(function() {
         $(".active .note-content").html($(this).html());
     });
 
+    //for each clicked date checks if its in past and warns or activates
     $("td").on("click", function() {
         $(".selected").removeClass("selected");
         if($(this).text() != "") {
@@ -453,9 +490,11 @@ $(function() {
 
     $("#date_apply").on("click", function() {
         applyNotification();
+        calculateNotification();
     });
     $("#date_cancel").on("click", function() {
         cancelNotification();
+        calculateNotification();
     });
 
     //switch the default text with file location on hover

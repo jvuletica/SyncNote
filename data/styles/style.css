@@ -316,7 +316,7 @@ td {
     width: 20px;
     background-size: 140%;
     background-position: center;
-    margin-left: 120px;
+    margin-left: 72px;
     left: 0;
 }
 #calendar footer button:hover {
@@ -332,7 +332,8 @@ td {
     background-image:url(../img/min.png);
 }
 #calendar footer div {
-    margin-right: 4px;
+    margin-right: 8px;
+    margin-left: -6px;
     display: inline-block;
 }
 #date_apply {
@@ -349,7 +350,7 @@ td {
     background-color: transparent;
     width: 120px;
     height: 45px;
-    margin: 30px 0 0 20px;
+    margin: 30px 0 0 0;
     border-radius: 10px;
     border: 2px solid
     transition: background 0.25s linear;
@@ -363,7 +364,7 @@ td {
 }
 .clock {
     transition: background 0.25s linear;
-    padding: 4px;
+    padding: 2px;
     border-radius: 6px;
 }
 .clock.chosen {
@@ -468,4 +469,7 @@ td {
 }
 #apply_settings button:hover {
     background-color: #263238;
+}
+.warning {
+    opacity: 0.3;
 }
